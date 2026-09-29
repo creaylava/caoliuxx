@@ -1,19 +1,33 @@
-name: Manual Trigger Workflow
+name: Auto Fetch and Deploy
 
 on:
-  workflow_dispatch: # 必须包含此项才能手动触发
-    inputs:          # (可选) 手动输入参数
-      reason:
-        description: 'Run reason'
-        required: false
-        default: 'Manual test'
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Run a script
-        run: echo "Workflow triggered successfully!"
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Fetch Script
+        run: node fetch.js
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-github-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
