@@ -1,0 +1,19 @@
+name: Manual Trigger Workflow
+
+on:
+  workflow_dispatch: # 必须包含此项才能手动触发
+    inputs:          # (可选) 手动输入参数
+      reason:
+        description: 'Run reason'
+        required: false
+        default: 'Manual test'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run a script
+        run: echo "Workflow triggered successfully!"
